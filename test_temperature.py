@@ -40,6 +40,11 @@ def test_temperature_conversions():
     # Rankine to Fahrenheit
     assert temp.rankine_to_fahrenheit(491.67) == 32
     assert temp.rankine_to_fahrenheit(0) == -459.67
+
+    # General conversion tests
+    assert round(temp.convert_temperature(0, temp.UNITS.CELSIUS, temp.UNITS.FAHRENHEIT),2) == 32
+    assert round(temp.convert_temperature(32, temp.UNITS.FAHRENHEIT, temp.UNITS.CELSIUS),2) == 0
+
     print("All temperature conversion tests passed!")
 
 if __name__ == "__main__":
