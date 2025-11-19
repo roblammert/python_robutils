@@ -1,13 +1,14 @@
 import typing as t
+from typing import Iterator, Optional, Tuple, List, TypeVar, Generic
 
 # Define the structure for a node in the hash table, 
 # which is (key, value) inside a list (the bucket/chain).
-K = t.TypeVar('K')
-V = t.TypeVar('V')
-Bucket = t.List[t.Tuple[K, V]]
+K = TypeVar('K')
+V = TypeVar('V')
+Bucket = List[Tuple[K, V]]
 
 
-class Hashtable(t.Generic[K, V]):
+class Hashtable(Generic[K, V]):
     """
     A custom Python implementation of a hash table structure, 
     mimicking key features found in Java's Hashtable, including 
@@ -29,7 +30,7 @@ class Hashtable(t.Generic[K, V]):
             
         self._capacity: int = initial_capacity
         # The main array of buckets (using a list of lists/chains)
-        self._buckets: t.List[Bucket] = [[] for _ in range(self._capacity)]
+        self._buckets: List[Bucket] = [[] for _ in range(self._capacity)]
         self._size: int = 0  # Number of key-value mappings
         self.load_factor: float = load_factor
 
@@ -40,7 +41,7 @@ class Hashtable(t.Generic[K, V]):
         """
         return hash(key) % self._capacity
 
-    def put(self, key: K, value: V) -> t.Optional[V]:
+    def put(self, key: K, value: V) -> Optional[V]:
         """
         Maps the specified key to the specified value in this hash table.
         
@@ -72,10 +73,13 @@ class Hashtable(t.Generic[K, V]):
 
         return None
 
-    def get(self, key: K) -> V:
+    def get(self, key: K, default: Optional[V] = None) -> V:
         """
         Returns the value to which the specified key is mapped.
-        Raises KeyError if the key is not found (Pythonic behavior).
+        If the key is not found, returns the optional 'default' value 
+        or raises KeyError if 'default' is not provided.
+        
+        This implements the more flexible Python 'dict.get(key, default)' signature.
         """
         index = self._hash(key)
         bucket = self._buckets[index]
@@ -84,7 +88,10 @@ class Hashtable(t.Generic[K, V]):
             if existing_key == key:
                 return value
         
-        # Key not found in the bucket chain
+        # Key not found in the bucket chain. Return default or raise error.
+        if default is not None:
+            return default
+            
         raise KeyError(f"Key not found: {key}")
 
     def remove(self, key: K) -> V:
@@ -110,10 +117,35 @@ class Hashtable(t.Generic[K, V]):
         Checks if the specified key is mapped in the hash table.
         """
         try:
-            self.get(key)
+            # Use the simple get() implementation (without default) to check for existence
+            self.get(key, default=None) 
             return True
         except KeyError:
             return False
+
+    def contains_value(self, value: V) -> bool:
+        """
+        Checks if the specified value exists in the hash table.
+        Note: This requires checking every item (O(N) complexity).
+        """
+        for _, v in self.items():
+            if v == value:
+                return True
+        return False
+        
+    def is_empty(self) -> bool:
+        """
+        Returns true if this hash table contains no key-value mappings.
+        """
+        return self._size == 0
+
+    def clear(self):
+        """
+        Removes all of the mappings from this hash table.
+        """
+        self._buckets = [[] for _ in range(self._capacity)]
+        self._size = 0
+        print("--- INFO: Hashtable cleared ---")
 
     def _rehash(self):
         """
@@ -131,11 +163,44 @@ class Hashtable(t.Generic[K, V]):
         # Re-insert all elements into the new, larger bucket array
         for bucket in old_buckets:
             for key, value in bucket:
-                self.put(key, value) # put() handles the new hashing and size update
+                # put() handles the new hashing and size update
+                self.put(key, value) 
         
         print(f"--- INFO: Hashtable resized from {old_capacity} to {self._capacity} ---")
 
-    # --- Pythonic Interface Methods ---
+    # --- Pythonic Iterator Methods (Views) ---
+
+    def keys(self) -> Iterator[K]:
+        """
+        Returns an iterator over the keys in the hash table.
+        """
+        for bucket in self._buckets:
+            for key, _ in bucket:
+                yield key
+
+    def values(self) -> Iterator[V]:
+        """
+        Returns an iterator over the values in the hash table.
+        """
+        for bucket in self._buckets:
+            for _, value in bucket:
+                yield value
+
+    def items(self) -> Iterator[Tuple[K, V]]:
+        """
+        Returns an iterator over the (key, value) pairs (items) in the hash table.
+        """
+        for bucket in self._buckets:
+            for key, value in bucket:
+                yield (key, value)
+
+    def __iter__(self) -> Iterator[K]:
+        """
+        Allows iteration over keys: for key in hashtable:
+        """
+        return self.keys()
+
+    # --- Pythonic Interface Methods (Magic Methods) ---
 
     def __len__(self) -> int:
         """
@@ -152,7 +217,11 @@ class Hashtable(t.Generic[K, V]):
     def __getitem__(self, key: K) -> V:
         """
         Implements value = hashtable[key]
+        Note: If using Pythonic indexing (like dict[key]), we must raise 
+        KeyError if not found, not return None. We use the 'get' method 
+        without the default parameter for this.
         """
+        # Call the dedicated get method, which raises KeyError
         return self.get(key)
 
     def __delitem__(self, key: K):
@@ -172,9 +241,8 @@ class Hashtable(t.Generic[K, V]):
         Provides a string representation of the hash table contents.
         """
         items = []
-        for bucket in self._buckets:
-            for key, value in bucket:
-                items.append(f"{repr(key)}: {repr(value)}")
+        for key, value in self.items():
+            items.append(f"{repr(key)}: {repr(value)}")
         return "{" + ", ".join(items) + "}"
     
     def __repr__(self) -> str:
@@ -189,42 +257,42 @@ if __name__ == '__main__':
     # Initialize a small hashtable to easily demonstrate resizing
     map = Hashtable(initial_capacity=4, load_factor=0.75) 
     
-    print(f"Initial State: {map!r}")
+    print(f"Initial State: {map!r}. Is empty? {map.is_empty()}")
     
     map.put("name", "Alice")
     map.put(101, "Java")
     map.put(3.14, "Pi")
     
-    print(f"State after 3 puts: {map!r}")
-    print(f"Value for 'name': {map.get('name')}")
-    print(f"Contains 'name'? {map.contains_key('name')}")
+    # Check new size methods
+    print(f"\nState after 3 puts: {map!r}. Size: {len(map)}")
     
-    # Trigger collision (keys 'name' and 'omen' might collide on a small table, 
-    # but we'll just add more unique items)
-    map[5] = "Five"
-    
-    # Capacity is 4. Load factor is 0.75. Resize triggers when size > 4 * 0.75 = 3.
-    # Current size is 4. Resizing should trigger here:
+    # Resizing check (4th item triggers resize as 4 > 4 * 0.75 = 3)
     map["apple"] = "Fruit" 
     
     print(f"\nState after resize: {map!r}")
     
-    # Update an existing key
-    old = map.put(101, "Python")
-    print(f"\nUpdated 101. Old value: {old}")
-    print(f"New value for 101: {map[101]}")
+    # Check iteration methods
+    print("\nIterating over keys:")
+    for key in map.keys():
+        print(f"- Key: {key}")
+        
+    print("Iterating over items:")
+    for key, value in map.items():
+        print(f"- {key} -> {value}")
+        
+    # Check contains_value
+    print(f"\nContains value 'Fruit'? {map.contains_value('Fruit')}")
+    print(f"Contains value 'Zebra'? {map.contains_value('Zebra')}")
     
-    # Remove a key
-    removed_value = map.remove(5)
-    print(f"\nRemoved key 5. Value removed: {removed_value}")
-    print(f"Current size: {len(map)}")
+    # Check get with default
+    print(f"Get 'missing' with default 'N/A': {map.get('missing', 'N/A')}")
     
-    # Demonstrate Pythonic deletion
-    del map['apple']
-    print(f"State after del: {map!r}")
+    # Clear the map
+    map.clear()
+    print(f"\nState after clear: {map!r}. Is empty? {map.is_empty()}")
 
-    # Attempt to access non-existent key
+    # Attempt to access non-existent key after clear
     try:
-        map['missing']
+        map['name']
     except KeyError as e:
-        print(f"\nCaught expected error: {e}")
+        print(f"Caught expected error: {e}")
