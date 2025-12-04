@@ -1,22 +1,183 @@
-# mypackage/text/__init__.py
+"""Text utilities package for string analysis, manipulation, markdown, statistics, and validation."""
 
-from .markdown import bold, italic, heading, link
-from .analysis import count_words, get_unique_words, get_word_frequency
-from .statistics import average_word_length, character_count
-from .manipulate import reverse_string, slugify, truncate
+# Import all functions from analysis module
+from .analysis import (
+    count_words,
+    get_unique_words,
+    get_word_frequency
+)
 
-# Define what happens during a 'from mypackage.text import *'
+# Import all functions from manipulate module
+from .manipulate import (
+    reverse_string,
+    slugify,
+    truncate,
+    to_upper,
+    to_lower,
+    capitalize_first,
+    replace_substring,
+    split,
+    join,
+    strip,
+    to_title_case,
+    to_snake_case,
+    to_camel_case,
+    to_pascal_case,
+    to_kebab_case,
+    to_sentence_case,
+    strip_whitespace,
+    remove_extra_spaces,
+    remove_punctuation,
+    clean,
+    pad,
+    url_encode,
+    url_decode
+)
+
+# Import all functions from markdown module
+from .markdown import (
+    bold,
+    italic,
+    heading,
+    link,
+    to_plain_text,
+    heading_count,
+    bold_count,
+    italic_count,
+    link_count,
+    list_count,
+    code_block_count,
+    inline_code_count,
+    image_count,
+    parse_markdown_table,
+    generate_markdown_table
+)
+
+# Import all functions from statistics module
+from .statistics import (
+    word_count,
+    words,
+    char_count,
+    is_palindrome,
+    sentence_count,
+    sentence_list,
+    paragraph_count,
+    paragraphs,
+    is_empty,
+    byte_length,
+    average_word_length,
+    character_count,
+    starts_with,
+    ends_with,
+    contains_only,
+    count_substring,
+    word_frequency
+)
+
+# Import all functions from validate module
+from .validate import (
+    is_not_none,
+    is_not_empty,
+    is_not_whitespace_only,
+    has_min_length,
+    has_max_length,
+    has_length_in_range,
+    contains_only_allowed_chars,
+    contains_no_disallowed_chars,
+    is_in_allowed_list,
+    is_not_in_forbidden_list,
+    is_valid_email,
+    is_valid_phone_e164,
+    is_alphanumeric_or_spaces,
+    is_valid_ip_address,
+    is_valid_uuid,
+    is_valid_url,
+    normalize_whitespace,
+    sanitize_for_url,
+    remove_html_tags
+)
+
 __all__ = [
-    "bold",
-    "italic",
-    "heading",
-    "link",
-    "count_words",
-    "get_unique_words",
-    "get_word_frequency",
-    "average_word_length",
-    "character_count",
-    "reverse_string",
-    "slugify",
-    "truncate",
+    # analysis
+    'count_words',
+    'get_unique_words',
+    'get_word_frequency',
+    # manipulate
+    'reverse_string',
+    'slugify',
+    'truncate',
+    'to_upper',
+    'to_lower',
+    'capitalize_first',
+    'replace_substring',
+    'split',
+    'join',
+    'strip',
+    'to_title_case',
+    'to_snake_case',
+    'to_camel_case',
+    'to_pascal_case',
+    'to_kebab_case',
+    'to_sentence_case',
+    'strip_whitespace',
+    'remove_extra_spaces',
+    'remove_punctuation',
+    'clean',
+    'pad',
+    'url_encode',
+    'url_decode',
+    # markdown
+    'bold',
+    'italic',
+    'heading',
+    'link',
+    'to_plain_text',
+    'heading_count',
+    'bold_count',
+    'italic_count',
+    'link_count',
+    'list_count',
+    'code_block_count',
+    'inline_code_count',
+    'image_count',
+    'parse_markdown_table',
+    'generate_markdown_table',
+    # statistics
+    'word_count',
+    'words',
+    'char_count',
+    'is_palindrome',
+    'sentence_count',
+    'sentence_list',
+    'paragraph_count',
+    'paragraphs',
+    'is_empty',
+    'byte_length',
+    'average_word_length',
+    'character_count',
+    'starts_with',
+    'ends_with',
+    'contains_only',
+    'count_substring',
+    'word_frequency',
+    # validate
+    'is_not_none',
+    'is_not_empty',
+    'is_not_whitespace_only',
+    'has_min_length',
+    'has_max_length',
+    'has_length_in_range',
+    'contains_only_allowed_chars',
+    'contains_no_disallowed_chars',
+    'is_in_allowed_list',
+    'is_not_in_forbidden_list',
+    'is_valid_email',
+    'is_valid_phone_e164',
+    'is_alphanumeric_or_spaces',
+    'is_valid_ip_address',
+    'is_valid_uuid',
+    'is_valid_url',
+    'normalize_whitespace',
+    'sanitize_for_url',
+    'remove_html_tags'
 ]
