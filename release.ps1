@@ -1,5 +1,6 @@
 param(
-    [switch]$IncludeAppImports = $false
+    [switch]$CheckDocsSync = $true,
+    [switch]$FailOnDocsSync = $false
 )
 
 $ErrorActionPreference = 'Stop'
@@ -22,10 +23,69 @@ $scriptRoot = Split-Path -Parent $MyInvocation.MyCommand.Path
 $workspaceRoot = Split-Path -Parent (Split-Path -Parent (Split-Path -Parent $scriptRoot))
 $pythonExe = Join-Path $workspaceRoot ".venv\Scripts\python.exe"
 $robutilsRoot = Join-Path $scriptRoot "robutils"
-$rJournalerRoot = Split-Path -Parent $scriptRoot
+$readmeFile = Join-Path $scriptRoot "README.md"
+$changelogFile = Join-Path $scriptRoot "CHANGELOG.md"
 
 if (-not (Test-Path $pythonExe)) {
     throw "Python interpreter not found at $pythonExe"
+}
+
+Write-Step "Checking required documentation files"
+if (-not (Test-Path $readmeFile)) {
+    throw "Missing documentation file: $readmeFile"
+}
+if (-not (Test-Path $changelogFile)) {
+    throw "Missing documentation file: $changelogFile"
+}
+Write-Host "Found README.md and CHANGELOG.md"
+
+if ($CheckDocsSync) {
+    Write-Step "Checking documentation sync against git changes"
+    $gitCommand = Get-Command git -ErrorAction SilentlyContinue
+    if (-not $gitCommand) {
+        Write-Host "Git not found; skipping docs sync check." -ForegroundColor Yellow
+    }
+    else {
+        $insideWorkTree = cmd /c "git -C \"$workspaceRoot\" rev-parse --is-inside-work-tree 2>nul"
+        if ($LASTEXITCODE -ne 0 -or $insideWorkTree.Trim() -ne 'true') {
+            Write-Host "Workspace is not a git work tree; skipping docs sync check." -ForegroundColor Yellow
+        }
+        else {
+            $changedPaths = @(
+                (cmd /c "git -C \"$workspaceRoot\" diff --name-only 2>nul")
+                (cmd /c "git -C \"$workspaceRoot\" diff --name-only --cached 2>nul")
+                (cmd /c "git -C \"$workspaceRoot\" ls-files --others --exclude-standard 2>nul")
+            ) | Where-Object { $_ -and $_.Trim().Length -gt 0 } | ForEach-Object { $_.Trim() } | Sort-Object -Unique
+
+            if ($changedPaths.Count -eq 0) {
+                Write-Host "No changed files detected; docs sync check passed." -ForegroundColor Green
+            }
+            else {
+                $docsFiles = @(
+                    'README.md',
+                    'CHANGELOG.md'
+                )
+
+                $codeFiles = $changedPaths | Where-Object {
+                    ($_ -like 'robutils/*.py') -or
+                    ($_ -like 'robutils/**/*.py') -or
+                    ($_ -like '*.ps1')
+                }
+                $docsTouched = $changedPaths | Where-Object { $docsFiles -contains $_ }
+
+                if ($codeFiles.Count -gt 0 -and $docsTouched.Count -eq 0) {
+                    $message = "Code changes detected without docs updates (README.md/CHANGELOG.md)."
+                    if ($FailOnDocsSync) {
+                        throw $message
+                    }
+                    Write-Host $message -ForegroundColor Yellow
+                }
+                else {
+                    Write-Host "Docs sync check passed." -ForegroundColor Green
+                }
+            }
+        }
+    }
 }
 
 Write-Step "Using Python interpreter"
@@ -53,21 +113,6 @@ for m in modules:
 "@
 Invoke-PythonSnippet -Code $importCode
 
-if ($IncludeAppImports) {
-    Write-Step "Running rJournaler import smoke test"
-    $appImportCode = @"
-import os
-import sys
-sys.path.insert(0, r'$scriptRoot')
-os.chdir(r'$rJournalerRoot')
-import core.config
-import core.stats_collector
-import rJournalEditor
-print('OK rJournaler imports')
-"@
-    Invoke-PythonSnippet -Code $appImportCode
-}
-
 Write-Step "Compiling robutils package"
 $compileCode = @"
 import py_compile
@@ -82,3 +127,4 @@ Invoke-PythonSnippet -Code $compileCode
 
 Write-Step "Release validation complete"
 Write-Host "All checks passed." -ForegroundColor Green
+Write-Host "Reminder: confirm README.md and CHANGELOG.md are updated for this change." -ForegroundColor Yellow

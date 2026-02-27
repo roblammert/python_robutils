@@ -9,15 +9,16 @@ All notable changes to this project are documented in this file.
 - Explicit canonical export surface for `robutils.tools`.
 - Logger compatibility exports (`StreamHandler`, `get_logger`) for stable imports.
 - PowerShell release helper script (`release.ps1`) to automate import and compile validation checks.
+- Git-aware documentation sync check in `release.ps1` to detect code changes without README/changelog updates.
 
 ### Changed
 - Bumped library version to `0.2.0`.
 - Updated `README.md` to reflect current package structure and import paths.
 - Updated examples to import `Hashtable` from `robutils.containers`.
-- `rJournaler` core now imports from cleaned `robutils` package APIs directly.
 - Added an explicit 0.1.x → 0.2.0 upgrade guide with old/new import mappings.
 - Added a documented deprecation timeline section for planned 0.3.0 API tightening.
 - Added a maintainer release checklist to standardize future versioning and validation flow.
+- Added optional strict mode (`-FailOnDocsSync`) for release validation to enforce docs updates in git worktrees.
 
 ### Fixed
 - Circular import risk in package initialization by removing eager subpackage imports.

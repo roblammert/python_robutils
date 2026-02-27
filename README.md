@@ -101,6 +101,20 @@ Use this checklist for every robutils release.
 - Update `README.md` examples if any public API names changed.
 - If there are breaking changes, update the Upgrade Guide section.
 
+## Documentation Sync Policy
+
+Keep documentation synchronized with every feature/fix change:
+
+- For **library API changes**:
+    - Update this `README.md`.
+    - Update `CHANGELOG.md`.
+    - Update Upgrade Guide mappings if names/paths changed.
+
+- Minimum standard for every change:
+    - code updated,
+    - docs updated,
+    - changelog updated.
+
 ### Optional automation
 
 Run the helper script to execute the import smoke tests and compile validation in one step:
@@ -109,10 +123,10 @@ Run the helper script to execute the import smoke tests and compile validation i
 ./release.ps1
 ```
 
-To include `rJournaler` import checks as part of the run:
+To run git-based docs sync checking (enabled by default) and fail if code changed without docs updates:
 
 ```powershell
-./release.ps1 -IncludeAppImports
+./release.ps1 -CheckDocsSync -FailOnDocsSync
 ```
 
 ## Features
