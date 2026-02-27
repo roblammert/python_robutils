@@ -35,7 +35,7 @@ def to_plain_text(text: str):
 
 def heading_count(text: str, min: int = 1, max: int = 6):
     """Count the number of headings in the markdown text."""
-    return len(re.findall(r'^(#{'+min+','+max+'})\s', text, re.MULTILINE))
+    return len(re.findall(rf'^(#{{{min},{max}}})\s', text, re.MULTILINE))
 
 def bold_count(text: str):
     """Count the number of bold text occurrences in the markdown text."""
@@ -244,30 +244,25 @@ def generate_markdown_table(
     return "\n".join(markdown_lines)
 
 
-# --- Example Usage ---
+if __name__ == '__main__':
+    print("--- GENERATING MARKDOWN TABLE ---")
+    data_to_save = [
+        {'Product': 'Laptop', 'Price': 1200.99, 'Units Sold': 150},
+        {'Product': 'Mousepad', 'Price': 15.00, 'Units Sold': 9800},
+        {'Product': 'Keyboard', 'Price': 75.50, 'Units Sold': 320},
+    ]
 
-# 1. GENERATE Markdown Table with Alignment
-print("--- GENERATING MARKDOWN TABLE ---")
-data_to_save = [
-    {'Product': 'Laptop', 'Price': 1200.99, 'Units Sold': 150},
-    {'Product': 'Mousepad', 'Price': 15.00, 'Units Sold': 9800},
-    {'Product': 'Keyboard', 'Price': 75.50, 'Units Sold': 320},
-]
+    alignments = {
+        'Product': 'center',
+        'Price': 'right',
+        'Units Sold': 'right'
+    }
 
-# Define alignment: center product, right-align numbers
-alignments = {
-    'Product': 'center',
-    'Price': 'right',
-    'Units Sold': 'right'
-}
+    markdown_output = generate_markdown_table(data_to_save, alignments)
+    print(markdown_output)
 
-markdown_output = generate_markdown_table(data_to_save, alignments)
-print(markdown_output)
-
-
-# 2. PARSE Markdown Table back into a Data Structure
-print("\n--- PARSING MARKDOWN TABLE ---")
-markdown_input = """
+    print("\n--- PARSING MARKDOWN TABLE ---")
+    markdown_input = """
 | Name       | Role        | Salary (K) |
 |:----------:|:-----------|-----------:|
 | Jane Doe   | Manager     | 95         |
@@ -275,6 +270,6 @@ markdown_input = """
 | Alan Turing| Cryptogrpher| 120        |
 """
 
-parsed_data = parse_markdown_table(markdown_input)
-print(parsed_data)
-print("-------------------------------")
+    parsed_data = parse_markdown_table(markdown_input)
+    print(parsed_data)
+    print("-------------------------------")

@@ -499,6 +499,14 @@ class LoggerManager:
                     else:
                         print(f"WARNING: Handler '{h_name}' not found for logger '{logger_name}'.")
 
+
+class StreamHandler(ConsoleHandler):
+    pass
+
+
+def get_logger(name: str = 'root') -> Logger:
+    return LoggerManager.get_logger(name)
+
 # --- 6. Example Usage Demonstrating Configuration Simplicity and New Functionality ---
 
 if __name__ == "__main__":

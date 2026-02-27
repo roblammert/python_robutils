@@ -1,12 +1,8 @@
-"""Math utilities package for measurements, numbers, and containers."""
+"""Math utilities package for measurements and numbers."""
 
 # Import subpackages for easy access
 from . import measurements
 from . import numbers
-from . import containers
-
-# Also expose the Hashtable class for convenience
-from .containers import Hashtable
 
 # Import all numbers functions at math level
 from .numbers import (
@@ -56,9 +52,6 @@ __all__ = [
     # subpackages
     'measurements',
     'numbers',
-    'containers',
-    # containers
-    'Hashtable',
     # numbers - fibonacci
     'get_nth_fibonacci',
     'is_fibonacci',

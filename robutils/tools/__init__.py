@@ -1,17 +1,14 @@
 """Tools utilities package for configuration, database, CSV, datetime, file operations, hashing, logging, and security."""
 
-# Import classes and functions from configFactory module
 from .configFactory import (
     BaseConfig,
     INIConfig,
     JSONConfig,
-    XMLConfig
+    XMLConfig,
 )
 
-# Import class from CSVManager module
 from .CSVManager import CSVManager
 
-# Import classes and exceptions from databaseManager module
 from .databaseManager import (
     DBConnection,
     DBNotSupportedError,
@@ -19,48 +16,38 @@ from .databaseManager import (
     SQLiteConnection,
     MySQLConnection,
     PostgreSQLConnection,
-    DBManager
+    DatabaseManager,
 )
 
-# Import class from datetimeManager module
 from .datetimeManager import DateTimeManager
 
-# Import functions from filesystemManager module
 from .filesystemManager import (
     get_path_object,
     read_file_content,
     write_file_content,
     atomic_write_file_content,
-    append_to_file,
-    file_exists,
     get_file_size,
     get_file_checksum,
-    copy_file,
-    move_file,
-    delete_file,
+    get_file_times,
     create_directory,
-    delete_directory,
-    list_directory,
+    create_temp_directory,
+    delete_path,
+    list_directory_contents,
+    walk_directory_contents,
     get_directory_size,
-    find_files,
+    move_path,
+    copy_path,
+    join_paths,
+    get_absolute_path,
+    get_parent_directory,
+    get_filename_and_extension,
     is_file,
     is_directory,
-    get_file_info,
-    get_absolute_path,
-    get_relative_path,
-    path_join,
-    split_path,
-    get_file_extension,
-    get_file_name,
-    get_directory_name,
-    ensure_directory_exists,
-    get_directory_tree
+    path_exists,
 )
 
-# Import class from HashTools module
 from .HashTools import HashTools
 
-# Import classes and functions from logger module
 from .logger import (
     AbstractFilter,
     LevelFilter,
@@ -68,89 +55,86 @@ from .logger import (
     ContextFilter,
     AbstractHandler,
     ConsoleHandler,
+    MemoryHandler,
     FileHandler,
+    RotatingFileHandler,
     SQLiteHandler,
-    StreamHandler,
+    SocketHandler,
+    HTTPHandler,
     Logger,
-    get_logger
+    LoggerManager,
+    StreamHandler,
+    get_logger,
 )
 
-# Import functions and classes from passwordManager module
 from .passwordManager import (
     hash_password,
     verify_password,
-    generate_password,
-    get_password_strength,
+    generate_strong_password,
+    generate_pin,
+    calculate_entropy,
     is_strong_password,
-    InvalidCredentialsError
+    InvalidCredentialsError,
 )
 
 __all__ = [
-    # configFactory
     'BaseConfig',
     'INIConfig',
     'JSONConfig',
     'XMLConfig',
-    # CSVManager
     'CSVManager',
-    # databaseManager
     'DBConnection',
     'DBNotSupportedError',
     'DBConnectionError',
     'SQLiteConnection',
     'MySQLConnection',
     'PostgreSQLConnection',
-    'DBManager',
-    # datetimeManager
+    'DatabaseManager',
     'DateTimeManager',
-    # filesystemManager
     'get_path_object',
     'read_file_content',
     'write_file_content',
     'atomic_write_file_content',
-    'append_to_file',
-    'file_exists',
     'get_file_size',
     'get_file_checksum',
-    'copy_file',
-    'move_file',
-    'delete_file',
+    'get_file_times',
     'create_directory',
-    'delete_directory',
-    'list_directory',
+    'create_temp_directory',
+    'delete_path',
+    'list_directory_contents',
+    'walk_directory_contents',
     'get_directory_size',
-    'find_files',
+    'move_path',
+    'copy_path',
+    'join_paths',
+    'get_absolute_path',
+    'get_parent_directory',
+    'get_filename_and_extension',
     'is_file',
     'is_directory',
-    'get_file_info',
-    'get_absolute_path',
-    'get_relative_path',
-    'path_join',
-    'split_path',
-    'get_file_extension',
-    'get_file_name',
-    'get_directory_name',
-    'ensure_directory_exists',
-    'get_directory_tree',
-    # HashTools
+    'path_exists',
     'HashTools',
-    # logger
     'AbstractFilter',
     'LevelFilter',
     'NameFilter',
     'ContextFilter',
     'AbstractHandler',
     'ConsoleHandler',
+    'MemoryHandler',
     'FileHandler',
+    'RotatingFileHandler',
     'SQLiteHandler',
-    'StreamHandler',
+    'SocketHandler',
+    'HTTPHandler',
     'Logger',
+    'LoggerManager',
+    'StreamHandler',
     'get_logger',
-    # passwordManager
     'hash_password',
     'verify_password',
-    'generate_password',
-    'get_password_strength',
+    'generate_strong_password',
+    'generate_pin',
+    'calculate_entropy',
     'is_strong_password',
-    'InvalidCredentialsError'
+    'InvalidCredentialsError',
 ]

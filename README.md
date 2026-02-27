@@ -6,7 +6,114 @@ A comprehensive, production-ready Python utilities library providing robust tool
 
 RobUtils is designed to reduce code duplication and provide reliable, thoroughly-tested utilities for everyday Python development. Whether you're building data pipelines, processing strings, performing calculations, or managing files, RobUtils has you covered.
 
-**Version**: 0.1.0
+**Version**: 0.2.0
+
+## What's New in 0.2.0
+
+- Package initialization is now lazy and safer (reduced circular import risk).
+- `robutils.tools` now exposes a canonical API surface with consistent export names.
+- Import-time demo side effects were removed from markdown utilities.
+- `robutils.math` no longer re-exports container types.
+- Added a versioned changelog at `CHANGELOG.md`.
+
+### Breaking Changes (0.2.0)
+
+- Use `from robutils.containers import Hashtable` instead of importing `Hashtable` from `robutils.math`.
+- Deprecated compatibility names in older `robutils.tools` exports were removed; use canonical names from `filesystemManager`, `databaseManager`, and `passwordManager`.
+
+## Upgrade Guide (0.1.x → 0.2.0)
+
+Use this quick mapping to migrate existing code.
+
+### Package imports
+
+```python
+# Old (0.1.x)
+from robutils.math import Hashtable
+
+# New (0.2.0)
+from robutils.containers import Hashtable
+```
+
+### Tools: database manager
+
+```python
+# Old (0.1.x)
+from robutils.tools import DBManager
+
+# New (0.2.0)
+from robutils.tools import DatabaseManager
+```
+
+### Tools: password helpers
+
+```python
+# Old (0.1.x)
+from robutils.tools import generate_password, get_password_strength
+
+# New (0.2.0)
+from robutils.tools import generate_strong_password, calculate_entropy
+```
+
+### Tools: filesystem helpers
+
+```python
+# Old (0.1.x)
+from robutils.tools import copy_file, move_file, delete_file, list_directory, find_files
+
+# New (0.2.0)
+from robutils.tools import copy_path, move_path, delete_path, list_directory_contents, walk_directory_contents
+```
+
+### Notes
+
+- `robutils` package initialization is lazy in 0.2.0 to avoid circular imports.
+- Prefer importing only the symbols you use instead of broad wildcard imports.
+
+## Deprecation Timeline
+
+### 0.2.x (Current)
+- Canonical APIs are the supported long-term surface.
+- Migration guide mappings in this document should be used for all new or updated code.
+
+### 0.3.0 (Planned)
+- Remove any remaining compatibility aliases that may still exist in downstream forks or consumer wrappers.
+- Keep only canonical import paths for `robutils.tools`, `robutils.math`, `robutils.text`, and `robutils.containers`.
+
+### Upgrade Policy
+- Minor versions may include deprecations and migration guidance.
+- Major behavioral removals are planned for the next minor cycle and documented in `CHANGELOG.md` first.
+
+## Maintainer Release Checklist
+
+Use this checklist for every robutils release.
+
+- Update `robutils/__init__.py` version (`__version__`).
+- Add or update release notes in `CHANGELOG.md` with `Added/Changed/Fixed/Removed` sections.
+- Verify canonical exports in package `__init__.py` files (`robutils`, `tools`, `math`, `text`, `containers`).
+- Run import smoke tests for major modules:
+    - `import robutils`
+    - `import robutils.text`
+    - `import robutils.math`
+    - `import robutils.tools`
+    - `import robutils.containers`
+- Run syntax validation for touched files using `py_compile`.
+- Update `README.md` examples if any public API names changed.
+- If there are breaking changes, update the Upgrade Guide section.
+
+### Optional automation
+
+Run the helper script to execute the import smoke tests and compile validation in one step:
+
+```powershell
+./release.ps1
+```
+
+To include `rJournaler` import checks as part of the run:
+
+```powershell
+./release.ps1 -IncludeAppImports
+```
 
 ## Features
 
@@ -53,15 +160,11 @@ Mathematical utilities spanning multiple domains:
 - **Volume**: Convert between imperial and metric volumes (cups, gallons, liters, milliliters, etc.)
 - **Weight**: Convert between various weight units (ounces, pounds, grams, kilograms, tonnes, etc.)
 
-**Data Structures**:
-- **Hashtable**: Custom implementation with separate chaining, automatic resizing, and flexible API
-
 **Example**:
 ```python
 from robutils.math import (
     is_prime, get_primes_up_to,
-    convert_distance, convert_temperature,
-    Hashtable
+    convert_distance, convert_temperature
 )
 
 # Prime numbers
@@ -72,7 +175,16 @@ print(get_primes_up_to(20))  # [2, 3, 5, 7, 11, 13, 17, 19]
 distance_km = convert_distance(5, 'mile', 'kilometer')
 temp_f = convert_temperature(25, 'Celsius', 'Fahrenheit')
 
-# Custom hashtable
+```
+
+### 📦 Containers (`robutils.containers`)
+Data structures and container utilities:
+- **Hashtable**: Custom implementation with separate chaining, automatic resizing, and flexible API
+
+**Example**:
+```python
+from robutils.containers import Hashtable
+
 ht = Hashtable()
 ht.put('key', 'value')
 print(ht.get('key'))  # 'value'
@@ -232,8 +344,8 @@ robutils/
 │   │   ├── fibonacci.py
 │   │   ├── prime.py
 │   │   └── validate.py
-│   └── containers/         # Data structures
-│       └── hashtable.py
+├── containers/              # Data structures
+│   └── hashtable.py
 └── tools/                   # Utility tools
     ├── configFactory.py     # Configuration handling
     ├── CSVManager.py        # CSV operations
@@ -246,6 +358,8 @@ robutils/
 ```
 
 ## API Reference
+
+For full release history and migration notes, see `CHANGELOG.md`.
 
 ### Text Module
 

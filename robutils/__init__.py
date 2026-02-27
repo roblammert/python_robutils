@@ -1,12 +1,6 @@
 """RobUtils - A comprehensive Python utilities library with math, text, tools, and container utilities."""
 
-__version__ = "0.1.0"
-
-# Import subpackages for easy access
-from . import math
-from . import text
-from . import tools
-from . import containers
+__version__ = "0.2.0"
 
 __all__ = [
     'math',

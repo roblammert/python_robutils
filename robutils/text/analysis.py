@@ -2,10 +2,13 @@
 
 """Module for basic text analysis functions."""
 
+from collections import Counter
+
+from .statistics import word_count
+
 def count_words(text):
     """Returns the number of words in a string."""
-    words = text.split()
-    return len(words)
+    return word_count(text)
 
 def get_unique_words(text):
     """Returns a set of unique words in the string (case-insensitive)."""
@@ -15,6 +18,5 @@ def get_unique_words(text):
 
 def get_word_frequency(text):
     """Returns a dictionary with word counts."""
-    from collections import Counter
     words = text.lower().split()
     return Counter(w.strip('.,!?"\'') for w in words if w)
